@@ -1,0 +1,23 @@
+{
+  "name": "jsdoc-2-configs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": "https://github.com/jrainlau/jsdoc-2-configs.git",
+  "author": "jrainliu <jrainliu@tencent.com>",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^10.4.2",
+    "ts-morph": "^23.0.0",
+    "typescript": "^5.5.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.9",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.5",
+    "ts-node": "^10.9.2"
+  }
+}
