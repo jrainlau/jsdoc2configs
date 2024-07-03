@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "npx jest"
   },
   "repository": "https://github.com/jrainlau/jsdoc-2-configs.git",
   "author": "jrainliu <jrainliu@tencent.com>",

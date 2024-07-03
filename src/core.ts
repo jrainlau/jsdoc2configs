@@ -1,5 +1,5 @@
-import { Project, SyntaxKind } from 'ts-morph'
-import { fillTemplate, getFilesByPattern } from './utils'
+import { JSDoc, JSDocParameterTag, JSDocReturnTag, JSDocTag, Project, SyntaxKind } from 'ts-morph'
+import { fillTemplate, getFilesByPattern, getJSDocFullContent } from './utils'
 
 interface Jsdoc2ConfigsOptions {
   inputs: string[];
@@ -11,6 +11,7 @@ interface Jsdoc2ConfigsOptions {
 
 const DEFAULT_DELIMITER = '{{}}'
 const DEFAULT_KEY_COMMENT_TAG = 'jsdoc2configs'
+const DEFAULT_CONVERT_FUNCTION = (docContent) => docContent
 
 const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
   const {
@@ -18,7 +19,7 @@ const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
     template,
     delimiter = DEFAULT_DELIMITER,
     keyCommentTag = DEFAULT_KEY_COMMENT_TAG,
-    convertFunction,
+    convertFunction = DEFAULT_CONVERT_FUNCTION,
   } = options
 
   const docContentsList: Record<string, string>[] = []
@@ -38,19 +39,19 @@ const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
     jsDocComments.forEach((doc) => {
       const docContent: {[key: string]: any} = {}
       doc.getTags().forEach((tag, index) => {
-        const tagName = tag.getTagName()
+        const tagName = tag.getTagName?.() || tag.getKindName()
         if (index === 0 && tagName !== keyCommentTag) return
 
-        const comment = tag.getComment()
+        const content = getJSDocFullContent(tag)
 
         if (!docContent[tagName]) {
-          docContent[tagName] = comment
+          docContent[tagName] = content
         } else {
           const tmp = docContent[tagName]
           if (Array.isArray(tmp)) {
-            tmp.push(comment)
+            tmp.push(content)
           } else {
-            docContent[tagName] = [tmp, comment]
+            docContent[tagName] = [tmp, content]
           }
         }
       })
@@ -61,7 +62,7 @@ const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
 
     docContentsList.forEach((docContent) => {
       const res = fillTemplate(template, docContent, delimiter)
-      if (res === template) return
+      if (res === template) { return }
       result.push(convertFunction?.(res) || res)
     })
   }
@@ -76,9 +77,11 @@ jsdoc2configs({
   template: `{
   "desc": {{ desc }},
   "param": {{ param }},
-  "returns": {{ returns }}
+  "returns": {{ returns }},
+  "throws": {{ throws }},
+  "callback": {{ callback }}
 }`,
-  convertFunction: (docContent: string) => JSON.parse(docContent),
+  convertFunction: (content) => JSON.parse(content),
 })
   .then(console.log)
   .catch(console.error)

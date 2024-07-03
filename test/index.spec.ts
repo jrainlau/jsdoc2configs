@@ -1,4 +1,4 @@
-import jsdoc2configs from '../index'
+import jsdoc2configs from '../src/core'
 
 describe('jsdoc2configs', () => {
   test('returns', async () => {
@@ -9,7 +9,7 @@ describe('jsdoc2configs', () => {
       "param": {{ param }},
       "returns": {{ returns }}
 }`,
-      convertFunction: (docContent: string) => JSON.parse(docContent),
+      // convertFunction: (docContent: string) => JSON.parse(docContent),
     })
 
     console.log(configs)
