@@ -3,12 +3,13 @@ import { fillTemplate, getFilesByPattern, getJSDocFullContent } from './utils'
 
 interface Jsdoc2ConfigsOptions {
   inputs: string[];
-  template: string;
+  template?: string;
   delimiter?: string;
   keyCommentTag?: string;
   convertFunction?: (docContent: string) => any;
 }
 
+const DEFAULT_TEMPLATE = ``
 const DEFAULT_DELIMITER = '{{}}'
 const DEFAULT_KEY_COMMENT_TAG = 'jsdoc2configs'
 const DEFAULT_CONVERT_FUNCTION = (docContent: string) => docContent
@@ -16,14 +17,14 @@ const DEFAULT_CONVERT_FUNCTION = (docContent: string) => docContent
 const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
   const {
     inputs,
-    template,
+    template = DEFAULT_TEMPLATE,
     delimiter = DEFAULT_DELIMITER,
     keyCommentTag = DEFAULT_KEY_COMMENT_TAG,
     convertFunction = DEFAULT_CONVERT_FUNCTION,
   } = options
 
-  const docContentsList: Record<string, string>[] = []
-  const result: any[] = []
+  const jsdocList: Record<string, string>[] = []
+  const renderedList: any[] = []
 
   let filePathList: string[] = [];
   for (const pattern of inputs) {
@@ -56,18 +57,18 @@ const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
         }
       })
       if (docContent.hasOwnProperty(keyCommentTag)) {
-        docContentsList.push(docContent)
+        jsdocList.push(docContent)
       }
     })
   }
 
-  docContentsList.forEach((docContent) => {
+  jsdocList.forEach((docContent) => {
     const res = fillTemplate(template, docContent, delimiter)
     if (res === template) { return }
-    result.push(convertFunction?.(res) || res)
+    renderedList.push(convertFunction?.(res) || res)
   })
 
-  return result
+  return { jsdocList, renderedList }
 }
 
 export default jsdoc2configs

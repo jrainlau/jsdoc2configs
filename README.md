@@ -55,7 +55,7 @@ jsdoc2configs({
   }`,
   convertFunction: (docContent) => JSON.parse(docContent),
 })
-  .then(console.log)
+  .then(({ renderedList }) => console.log(renderedList))
 ```
 
 after generating, we could see the log from output:
@@ -111,7 +111,7 @@ after generating, we could see the log from output:
 ```ts
 interface Jsdoc2ConfigsOptions {
   inputs: string[]; // Input file paths, supports Glob syntax.
-  template: string; // Template for generating configuration files.
+  template?: string; // Template for generating configuration files.
   delimiter?: string; // Custom delimiter to replace placeholders in the template, default to "{{}}"
   keyCommentTag?: string; // Custom comment tag to mark code blocks that need to generate configurations, default to "jsdoc2configs"
   convertFunction?: (docContent: string) => any; // Custom conversion function to process the generated configuration content.

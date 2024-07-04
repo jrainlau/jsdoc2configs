@@ -53,7 +53,7 @@ jsdoc2configs({
   }`,
   convertFunction: (docContent) => JSON.parse(docContent),
 })
-  .then(console.log)
+  .then(({ renderedList }) => console.log(renderedList))
 ```
 
 生成后，我们可以从输出中看到日志：
@@ -109,7 +109,7 @@ jsdoc2configs({
 ```ts
 interface Jsdoc2ConfigsOptions {
   inputs: string[]; // 输入文件路径，支持 Glob 语法。
-  template: string; // 用于生成配置文件的模板。
+  template?: string; // 用于生成配置文件的模板。
   delimiter?: string; // 自定义分隔符，用于替换模板中的占位符，默认为 "{{}}"
   keyCommentTag?: string; // 自定义注释标签，用于标记需要生成配置的代码块，默认为 "jsdoc2configs"
   convertFunction?: (docContent: string) => any; // 自定义转换函数，用于处理生成的配置内容。
