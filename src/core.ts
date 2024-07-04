@@ -1,4 +1,4 @@
-import { JSDoc, JSDocParameterTag, JSDocReturnTag, JSDocTag, Project, SyntaxKind } from 'ts-morph'
+import { Project, SyntaxKind } from 'ts-morph'
 import { fillTemplate, getFilesByPattern, getJSDocFullContent } from './utils'
 
 interface Jsdoc2ConfigsOptions {
@@ -59,29 +59,15 @@ const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
         docContentsList.push(docContent)
       }
     })
-
-    docContentsList.forEach((docContent) => {
-      const res = fillTemplate(template, docContent, delimiter)
-      if (res === template) { return }
-      result.push(convertFunction?.(res) || res)
-    })
   }
+
+  docContentsList.forEach((docContent) => {
+    const res = fillTemplate(template, docContent, delimiter)
+    if (res === template) { return }
+    result.push(convertFunction?.(res) || res)
+  })
 
   return result
 }
 
 export default jsdoc2configs
-
-jsdoc2configs({
-  inputs: ['./test/test_folder_1/file_1.ts'],
-  template: `{
-  "desc": {{ desc }},
-  "param": {{ param }},
-  "returns": {{ returns }},
-  "throws": {{ throws }},
-  "callback": {{ callback }}
-}`,
-  convertFunction: (content) => JSON.parse(content),
-})
-  .then(console.log)
-  .catch(console.error)

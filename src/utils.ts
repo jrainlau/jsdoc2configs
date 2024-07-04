@@ -14,7 +14,7 @@ export function fillTemplate(template: string, data: Record<string, string>, del
   return template.replace(regex, (match, p1) => {
     const value = data[p1]
     if (value === undefined) {
-      return match
+      return `"${match}"`
     }
     return JSON.stringify(value)
   })
@@ -26,32 +26,30 @@ export async function getFilesByPattern(pattern: string) {
 }
 
 const SupportedJSDocTagsKinds = [
-'JSDocTag',
-'JSDocAugmentsTag',
-'JSDocAuthorTag',
-'JSDocDeprecatedTag',
-'JSDocClassTag',
-'JSDocPublicTag',
-'JSDocPrivateTag',
-'JSDocProtectedTag',
-'JSDocReadonlyTag',
-'JSDocOverrideTag',
-'JSDocCallbackTag',
-'JSDocOverloadTag',
-'JSDocParameterTag',
-'JSDocReturnTag',
-'JSDocTypeTag',
-'JSDocTemplateTag',
-'JSDocSeeTag',
-'JSDocPropertyTag',
-'JSDocThrowsTag',
+  'JSDocTag',
+  'JSDocAugmentsTag',
+  'JSDocAuthorTag',
+  'JSDocDeprecatedTag',
+  'JSDocClassTag',
+  'JSDocPublicTag',
+  'JSDocPrivateTag',
+  'JSDocProtectedTag',
+  'JSDocReadonlyTag',
+  'JSDocOverrideTag',
+  'JSDocCallbackTag',
+  'JSDocOverloadTag',
+  'JSDocParameterTag',
+  'JSDocReturnTag',
+  'JSDocTemplateTag',
+  'JSDocSeeTag',
+  'JSDocPropertyTag',
+  'JSDocThrowsTag',
 ]
 
 const JSDocTagWithTypeExpression = [
   'JSDocParameterTag',
   'JSDocReturnTag',
   'JSDocThrowsTag',
-  'JSDocTypeTag',
 ]
 
 const JSDocTagWithTypeDefinition = [
@@ -66,23 +64,29 @@ export function getJSDocFullContent(jsdocTag: JSDocTag) {
   }
   const comment = jsdocTag.getCommentText()
   
-  let tagContent = comment
+  let tagContent: string | { type: string; comment: string | undefined; paramName?: string; optional?: boolean; } | undefined = comment
 
   JSDocTagWithTypeExpression.forEach((tag) => {
     if (tag === tagKindName) {
       const typedJsdocTag = jsdocTag as JSDocParameterTag
-      const typeExpression = typedJsdocTag.getTypeExpression()
-      let paramName = typedJsdocTag.getName?.() || ''
-      if (paramName) {
-        paramName = typedJsdocTag.isBracketed?.() ? `[${paramName}]` : paramName
+
+      const [tagLabel, tagTypeExpression, paramName] = typedJsdocTag.getChildren().map(node => node.getFullText())
+      tagContent = {
+        type: tagTypeExpression,
+        comment,
+        paramName,
+        optional: typedJsdocTag.isBracketed?.() ?? undefined,
       }
-      tagContent = `${typeExpression?.getText()} ${paramName} ${comment}`
     }
   })
 
   JSDocTagWithTypeDefinition.forEach((tag) => {
     if (tag === tagKindName) {
-      tagContent = `CUSTOM_KIND ${comment}`
+      const [tagLabel, tagTypeExpression] = jsdocTag.getChildren().map(node => node.getFullText())
+      tagContent = {
+        type: tagTypeExpression,
+        comment,
+      }
     }
   })
 
