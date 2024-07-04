@@ -11,7 +11,7 @@ interface Jsdoc2ConfigsOptions {
 
 const DEFAULT_DELIMITER = '{{}}'
 const DEFAULT_KEY_COMMENT_TAG = 'jsdoc2configs'
-const DEFAULT_CONVERT_FUNCTION = (docContent) => docContent
+const DEFAULT_CONVERT_FUNCTION = (docContent: string) => docContent
 
 const jsdoc2configs = async (options: Jsdoc2ConfigsOptions) => {
   const {

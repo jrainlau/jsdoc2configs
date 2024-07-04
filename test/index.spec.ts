@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'bun:test'
 import jsdoc2configs from '../index'
 
 describe('jsdoc2configs', () => {

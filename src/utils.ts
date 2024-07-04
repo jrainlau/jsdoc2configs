@@ -1,6 +1,6 @@
 import * as path from 'path'
 import { glob } from 'glob'
-import { JSDocCallbackTag, JSDocParameterTag, JSDocTag, SyntaxKind } from 'ts-morph'
+import { JSDocParameterTag, JSDocTag } from 'ts-morph'
 
 export function fillTemplate(template: string, data: Record<string, string>, delimiter: string) {
   if (delimiter.length % 2 !== 0) {
